@@ -1,0 +1,184 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Accounting System</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .register-container {
+            max-width: 500px;
+            margin: 60px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .register-header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .register-header p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .form-group small {
+            display: block;
+            margin-top: 4px;
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+        .btn-register {
+            width: 100%;
+            padding: 12px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-register:hover {
+            background: #229954;
+        }
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c33;
+        }
+        .success-message {
+            background: #e8f8f5;
+            color: #27ae60;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #27ae60;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .login-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        .required-field::after {
+            content: " *";
+            color: #e74c3c;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 576px) {
+            .register-container {
+                margin: 30px 15px;
+                padding: 30px 20px;
+            }
+            .register-header h1 {
+                font-size: 24px;
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body style="background: #ecf0f1;">
+    <div class="register-container">
+        <div class="register-header">
+            <h1>Create Account</h1>
+            <p>Register for access to the Accounting System</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="{% if message.tags == 'success' %}success-message{% else %}error-message{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="username" class="required-field">Username</label>
+                <input type="text" id="username" name="username" required autofocus maxlength="150" value="{{ request.POST.username }}">
+                <small>Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="required-field">Email</label>
+                <input type="email" id="email" name="email" required maxlength="254" value="{{ request.POST.email }}">
+                <small>Required. A valid email address.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="first_name">First Name</label>
+                <input type="text" id="first_name" name="first_name" maxlength="150" value="{{ request.POST.first_name }}">
+                <small>Optional.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="last_name">Last Name</label>
+                <input type="text" id="last_name" name="last_name" maxlength="150" value="{{ request.POST.last_name }}">
+                <small>Optional.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="required-field">Password</label>
+                <input type="password" id="password" name="password" required>
+                <small>Required. Minimum 8 characters.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="password_confirm" class="required-field">Confirm Password</label>
+                <input type="password" id="password_confirm" name="password_confirm" required>
+                <small>Required. Enter the same password as before, for verification.</small>
+            </div>
+
+            <button type="submit" class="btn-register">Register</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="{% url 'login' %}">Sign in here</a>
+        </div>
+    </div>
+</body>
+</html>

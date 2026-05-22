@@ -25,6 +25,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', settings_views.login_view, name='login'),
     path('logout/', settings_views.logout_view, name='logout'),
+    path('register/', settings_views.register_view, name='register'),
+    path('pending-approval/', settings_views.pending_approval_view, name='pending_approval'),
     path('', include('dashboard.urls')),
     path('accounts/', include('accounts.urls')),
     path('transactions/', include('transactions.urls')),
