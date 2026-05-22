@@ -1,0 +1,17 @@
+-r requirements.txt
+
+# Testing
+pytest>=8.0.0
+pytest-django>=4.7.0
+coverage>=7.4.0
+freezegun>=1.4.0
+
+# Code Quality
+ruff>=0.1.15
+black>=24.1.0
+mypy>=1.8.0
+django-stubs>=4.2.7
+
+# Development
+django-debug-toolbar>=4.2.0
+ipython>=8.20.0

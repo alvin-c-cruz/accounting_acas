@@ -1,0 +1,342 @@
+{% extends 'base_report.html' %}
+
+{% block title %}Income Statement - Accounting System{% endblock %}
+
+{% block extra_css %}
+<style>
+.report-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav-links {
+            margin-bottom: 20px;
+        }
+
+        .nav-links a {
+            color: #1976d2;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #333;
+        }
+
+        .report-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 32px;
+            color: #333;
+        }
+
+        .report-date {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+        }
+
+        .section-header.revenue {
+            background: #7b1fa2;
+        }
+
+        .section-header.expense {
+            background: #f57c00;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .account-group {
+            margin-bottom: 25px;
+        }
+
+        .account-group-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .sub-account-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .sub-account-row:hover {
+            background: #f9f9f9;
+        }
+
+        .account-name {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .account-code {
+            color: #999;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .account-balance {
+            font-weight: 600;
+            font-family: monospace;
+            color: #333;
+        }
+
+        .section-total {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 3px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .total-amount {
+            font-family: monospace;
+            font-size: 24px;
+        }
+
+        .net-income-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            padding: 30px;
+        }
+
+        .calculation {
+            font-size: 18px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .calculation-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 18px;
+        }
+
+        .calculation-row.total {
+            border-top: 3px double #333;
+            border-bottom: 3px double #333;
+            font-weight: bold;
+            font-size: 22px;
+            margin-top: 10px;
+        }
+
+        .net-income-result {
+            text-align: center;
+            padding: 30px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .net-income-result.profit {
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+        }
+
+        .net-income-result.loss {
+            background: #f8d7da;
+            border: 2px solid #f5c6cb;
+        }
+
+        .net-income-label {
+            font-size: 18px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .net-income-label.profit {
+            color: #155724;
+        }
+
+        .net-income-label.loss {
+            color: #721c24;
+        }
+
+        .net-income-value {
+            font-size: 36px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .net-income-value.profit {
+            color: #155724;
+        }
+
+        .net-income-value.loss {
+            color: #721c24;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+        }
+
+        @media print {
+            .nav-links {
+                display: none;
+            }
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="report-header">
+            <h1>Income Statement</h1>
+            <p class="report-date">For the Period Ending {{ "now"|date:"F d, Y" }}</p>
+        </div>
+
+        <!-- Revenue Section -->
+        <div class="section-card">
+            <div class="section-content">
+                {% if revenues %}
+                    {% for main_account in revenues %}
+                    <div class="account-group">
+                        <div class="account-group-title">
+                            {{ main_account.code }} - {{ main_account.name }}
+                        </div>
+                        {% for sub_account in main_account.sub_accounts.all %}
+                            {% if sub_account.is_active %}
+                            <div class="sub-account-row">
+                                <div>
+                                    <span class="account-name">{{ sub_account.name }}</span>
+                                    <span class="account-code">({{ sub_account.code }})</span>
+                                </div>
+                                <div class="account-balance">
+                                    ${{ sub_account.get_balance|floatformat:2 }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">No revenue accounts found</div>
+                {% endif %}
+
+                <div class="section-total">
+                    <span>TOTAL REVENUE</span>
+                    <span class="total-amount">${{ total_revenue|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost of Goods Sold Section -->
+        <div class="section-card">
+            <div class="section-content">
+                {% if cogs_accounts %}
+                    {% for main_account in cogs_accounts %}
+                    <div class="account-group">
+                        <div class="account-group-title">
+                            {{ main_account.code }} - {{ main_account.name }}
+                        </div>
+                        {% for sub_account in main_account.sub_accounts.all %}
+                            {% if sub_account.is_active %}
+                            <div class="sub-account-row">
+                                <div>
+                                    <span class="account-name">{{ sub_account.name }}</span>
+                                    <span class="account-code">({{ sub_account.code }})</span>
+                                </div>
+                                <div class="account-balance">
+                                    ${{ sub_account.get_balance|floatformat:2 }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="section-total" style="border-top: 2px solid #e0e0e0; margin-top: 15px; padding-top: 15px;">
+                    <span>TOTAL COST OF GOODS SOLD</span>
+                    <span class="total-amount">${{ total_cogs|floatformat:2 }}</span>
+                </div>
+
+                <div class="section-total" style="background: #f9f9f9; padding: 15px; margin-top: 10px; border-radius: 5px;">
+                    <span>GROSS PROFIT</span>
+                    <span class="total-amount" style="color: {% if gross_profit >= 0 %}#2e7d32{% else %}#c62828{% endif %};">
+                        ${{ gross_profit|floatformat:2 }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Operating Expenses Section -->
+        <div class="section-card">
+            <div class="section-content">
+                {% if operating_expenses %}
+                    {% for main_account in operating_expenses %}
+                    <div class="account-group">
+                        <div class="account-group-title">
+                            {{ main_account.code }} - {{ main_account.name }}
+                        </div>
+                        {% for sub_account in main_account.sub_accounts.all %}
+                            {% if sub_account.is_active %}
+                            <div class="sub-account-row">
+                                <div>
+                                    <span class="account-name">{{ sub_account.name }}</span>
+                                    <span class="account-code">({{ sub_account.code }})</span>
+                                </div>
+                                <div class="account-balance">
+                                    ${{ sub_account.get_balance|floatformat:2 }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="section-total">
+                    <span>TOTAL OPERATING EXPENSES</span>
+                    <span class="total-amount">${{ total_operating|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Net Income -->
+        <div class="net-income-card">
+            <div class="calculation-row total" style="padding: 30px 20px;">
+                <span>NET INCOME</span>
+                <span class="total-amount">${{ net_income|floatformat:2 }}</span>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,289 @@
+{% extends 'base_report.html' %}
+
+{% block title %}Statement of Cash Flows - Accounting System{% endblock %}
+
+{% block extra_css %}
+<style>
+.report-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav-links {
+            margin-bottom: 20px;
+        }
+
+        .nav-links a {
+            color: #1976d2;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #333;
+        }
+
+        .report-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 32px;
+            color: #333;
+        }
+
+        .report-date {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .cash-flow-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .activity-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 15px;
+            margin-bottom: 2px;
+        }
+
+        .activity-line:hover {
+            background: #f9f9f9;
+        }
+
+        .activity-description {
+            color: #555;
+        }
+
+        .activity-amount {
+            font-family: monospace;
+            font-weight: 500;
+            min-width: 120px;
+            text-align: right;
+        }
+
+        .activity-amount.inflow {
+            color: #2e7d32;
+        }
+
+        .activity-amount.outflow {
+            color: #c62828;
+        }
+
+        .subtotal-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            margin-top: 10px;
+            border-top: 2px solid #e0e0e0;
+            font-weight: 600;
+        }
+
+        .subtotal-label {
+            color: #333;
+        }
+
+        .subtotal-amount {
+            font-family: monospace;
+            min-width: 120px;
+            text-align: right;
+        }
+
+        .subtotal-amount.positive {
+            color: #2e7d32;
+        }
+
+        .subtotal-amount.negative {
+            color: #c62828;
+        }
+
+        .total-section {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 2px solid #1976d2;
+        }
+
+        .total-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .total-line.grand-total {
+            border-top: 3px double #1976d2;
+            margin-top: 15px;
+            padding-top: 15px;
+            font-size: 22px;
+        }
+
+        .total-amount {
+            font-family: monospace;
+            color: #1976d2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 10px 0;
+        }
+
+        @media print {
+            .nav-links {
+                display: none;
+            }
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="report-header">
+            <h1>Statement of Cash Flows</h1>
+            <p class="report-date">For the Period Ending {{ "now"|date:"F d, Y" }}</p>
+        </div>
+
+        <!-- Operating Activities -->
+        <div class="cash-flow-section">
+            <h2 class="section-title">Cash Flows from Operating Activities</h2>
+
+            {% if operating_activities %}
+                {% for activity in operating_activities %}
+                <div class="activity-line">
+                    <div class="activity-description">{{ activity.description }}</div>
+                    <div class="activity-amount {% if activity.is_inflow %}inflow{% else %}outflow{% endif %}">
+                        {% if activity.is_inflow %}+{% else %}-{% endif %}${{ activity.amount|floatformat:2 }}
+                    </div>
+                </div>
+                {% if not forloop.last %}
+                    {% with operating_activities|slice:forloop.counter as remaining %}
+                    {% if activity.is_inflow and remaining.0 and not remaining.0.is_inflow %}
+                    <div style="height: 30px;"></div>
+                    {% endif %}
+                    {% endwith %}
+                {% endif %}
+                {% endfor %}
+
+                <div class="subtotal-line">
+                    <div class="subtotal-label">Net Cash from Operating Activities</div>
+                    <div class="subtotal-amount {% if operating_net >= 0 %}positive{% else %}negative{% endif %}">
+                        ${{ operating_net|floatformat:2 }}
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <p>No operating activities recorded</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Investing Activities -->
+        <div class="cash-flow-section">
+            <h2 class="section-title">Cash Flows from Investing Activities</h2>
+
+            {% if investing_activities %}
+                {% for activity in investing_activities %}
+                <div class="activity-line">
+                    <div class="activity-description">{{ activity.description }}</div>
+                    <div class="activity-amount {% if activity.is_inflow %}inflow{% else %}outflow{% endif %}">
+                        {% if activity.is_inflow %}+{% else %}-{% endif %}${{ activity.amount|floatformat:2 }}
+                    </div>
+                </div>
+                {% if not forloop.last %}
+                    {% with investing_activities|slice:forloop.counter as remaining %}
+                    {% if activity.is_inflow and remaining.0 and not remaining.0.is_inflow %}
+                    <div style="height: 30px;"></div>
+                    {% endif %}
+                    {% endwith %}
+                {% endif %}
+                {% endfor %}
+
+                <div class="subtotal-line">
+                    <div class="subtotal-label">Net Cash from Investing Activities</div>
+                    <div class="subtotal-amount {% if investing_net >= 0 %}positive{% else %}negative{% endif %}">
+                        ${{ investing_net|floatformat:2 }}
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <p>No investing activities recorded</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Financing Activities -->
+        <div class="cash-flow-section">
+            <h2 class="section-title">Cash Flows from Financing Activities</h2>
+
+            {% if financing_activities %}
+                {% for activity in financing_activities %}
+                <div class="activity-line">
+                    <div class="activity-description">{{ activity.description }}</div>
+                    <div class="activity-amount {% if activity.is_inflow %}inflow{% else %}outflow{% endif %}">
+                        {% if activity.is_inflow %}+{% else %}-{% endif %}${{ activity.amount|floatformat:2 }}
+                    </div>
+                </div>
+                {% if not forloop.last %}
+                    {% with financing_activities|slice:forloop.counter as remaining %}
+                    {% if activity.is_inflow and remaining.0 and not remaining.0.is_inflow %}
+                    <div style="height: 30px;"></div>
+                    {% endif %}
+                    {% endwith %}
+                {% endif %}
+                {% endfor %}
+
+                <div class="subtotal-line">
+                    <div class="subtotal-label">Net Cash from Financing Activities</div>
+                    <div class="subtotal-amount {% if financing_net >= 0 %}positive{% else %}negative{% endif %}">
+                        ${{ financing_net|floatformat:2 }}
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <p>No financing activities recorded</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Summary -->
+        <div class="total-section">
+            <div class="total-line">
+                <div>Net Increase (Decrease) in Cash</div>
+                <div class="total-amount">${{ net_change_in_cash|floatformat:2 }}</div>
+            </div>
+            <div class="total-line">
+                <div>Cash at Beginning of Period</div>
+                <div class="total-amount">${{ beginning_cash|floatformat:2 }}</div>
+            </div>
+            <div class="total-line grand-total">
+                <div>Cash at End of Period</div>
+                <div class="total-amount">${{ ending_cash|floatformat:2 }}</div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

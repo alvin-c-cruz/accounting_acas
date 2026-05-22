@@ -1,0 +1,390 @@
+{% load static %}
+<style>
+    /* Accounting Design System - Single Navigation Bar */
+    :root {
+        --acas-primary: #1a6473;
+        --acas-primary-dark: #135260;
+        --acas-primary-light: #e6f3f5;
+        --acas-bg: #f8f9fa;
+        --acas-surface: #ffffff;
+        --acas-border: #e2e8f0;
+        --acas-text: #1a2a2a;
+        --acas-text-muted: #6b7280;
+    }
+
+    /* Single Teal Navigation Bar */
+    .acas-navbar {
+        background: var(--acas-primary);
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .acas-nav-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    /* Company Brand */
+    .acas-brand {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #ffffff;
+        text-decoration: none;
+        transition: opacity 0.3s ease;
+        letter-spacing: -0.01em;
+        padding: 14px 0;
+        white-space: nowrap;
+    }
+
+    .acas-brand:hover {
+        opacity: 0.85;
+        color: #ffffff;
+    }
+
+    /* Navigation Links */
+    .acas-nav-links {
+        display: flex;
+        gap: 0;
+        align-items: center;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        flex: 1;
+    }
+
+    .acas-nav-links li {
+        margin: 0;
+    }
+
+    .acas-nav-links a {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 16px 20px;
+        color: rgba(255, 255, 255, 0.88);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+    }
+
+    .acas-nav-links a:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        border-bottom-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .acas-nav-links a.active {
+        background: rgba(255, 255, 255, 0.18);
+        color: #ffffff;
+        border-bottom-color: #ffffff;
+        font-weight: 600;
+    }
+
+    .acas-nav-icon {
+        font-size: 16px;
+    }
+
+    /* Right Section - User & Admin */
+    .acas-nav-right {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-left: auto;
+        padding-left: 1.5rem;
+        border-left: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .acas-nav-admin {
+        display: flex;
+        gap: 0;
+    }
+
+    /* User Info */
+    .acas-user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 0.82rem;
+        font-weight: 500;
+    }
+
+    .acas-user-info .username {
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    /* Logout Button */
+    .acas-btn-logout {
+        background: rgba(192, 57, 43, 0.95);
+        color: white;
+        padding: 7px 16px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        white-space: nowrap;
+    }
+
+    .acas-btn-logout:hover {
+        background: rgba(169, 50, 38, 1);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+        color: white;
+    }
+
+    /* Mobile Menu Toggle */
+    .acas-menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 8px;
+        order: 2;
+    }
+
+    .acas-menu-toggle:hover {
+        opacity: 0.8;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .acas-nav-content {
+            flex-wrap: wrap;
+            gap: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        .acas-brand {
+            padding: 14px 20px;
+            font-size: 1.2rem;
+            order: 1;
+        }
+
+        .acas-menu-toggle {
+            display: block;
+            margin-left: auto;
+            margin-right: 20px;
+            padding: 14px 8px;
+        }
+
+        .acas-nav-links {
+            order: 4;
+            width: 100%;
+            flex-direction: column;
+            align-items: stretch;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .acas-nav-links.active {
+            max-height: 500px;
+        }
+
+        .acas-nav-links a {
+            padding: 14px 20px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom-width: 1px;
+        }
+
+        .acas-nav-links a.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .acas-nav-right {
+            order: 3;
+            width: 100%;
+            margin-left: 0;
+            padding: 12px 20px;
+            border-left: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 12px;
+            justify-content: space-between;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .acas-nav-right.active {
+            max-height: 200px;
+        }
+
+        .acas-user-info {
+            font-size: 0.8rem;
+        }
+
+        .acas-nav-admin {
+            order: 5;
+            width: 100%;
+            flex-direction: column;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .acas-nav-admin.active {
+            max-height: 200px;
+        }
+
+        .acas-nav-icon {
+            font-size: 15px;
+        }
+
+        .acas-btn-logout {
+            white-space: nowrap;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .acas-brand {
+            font-size: 1.1rem;
+            padding: 12px 16px;
+        }
+
+        .acas-menu-toggle {
+            margin-right: 16px;
+            padding: 12px 8px;
+        }
+
+        .acas-user-info .welcome-text {
+            display: none;
+        }
+
+        .acas-btn-logout {
+            padding: 7px 12px;
+            font-size: 0.75rem;
+        }
+
+        .acas-nav-links a {
+            padding: 12px 16px;
+            font-size: 0.8rem;
+        }
+
+        .acas-nav-right {
+            padding: 10px 16px;
+        }
+    }
+</style>
+
+<!-- Single Consolidated Navigation Bar -->
+<nav class="acas-navbar">
+    <div class="acas-nav-content">
+        <!-- Company Brand -->
+        <a href="/" class="acas-brand">{{ site_settings.company_name }}</a>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="acas-menu-toggle" id="menuToggle" aria-label="Toggle menu">
+            ☰
+        </button>
+
+        <!-- Main Navigation Links -->
+        <ul class="acas-nav-links" id="navLinks">
+            <li>
+                <a href="/" class="{% if request.path == '/' %}active{% endif %}">
+                    <span class="acas-nav-icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/accounts" class="{% if '/accounts' in request.path %}active{% endif %}">
+                    <span class="acas-nav-icon">📊</span>
+                    <span>Accounts</span>
+                </a>
+            </li>
+            <li>
+                <a href="/transactions" class="{% if '/transactions' in request.path %}active{% endif %}">
+                    <span class="acas-nav-icon">💳</span>
+                    <span>Transactions</span>
+                </a>
+            </li>
+            <li>
+                <a href="/reports" class="{% if '/reports' in request.path %}active{% endif %}">
+                    <span class="acas-nav-icon">📈</span>
+                    <span>Reports</span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- Right Section: User Info, Admin Links, Logout -->
+        <div class="acas-nav-right" id="navRight">
+            <!-- Admin Links (Superuser Only) -->
+            {% if user.is_superuser %}
+            <ul class="acas-nav-links acas-nav-admin" id="navAdmin">
+                <li>
+                    <a href="/settings" class="{% if '/settings' in request.path %}active{% endif %}">
+                        <span class="acas-nav-icon">⚙️</span>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin" class="{% if '/admin' in request.path and '/admin/logout' not in request.path %}active{% endif %}">
+                        <span class="acas-nav-icon">🔧</span>
+                        <span>Admin</span>
+                    </a>
+                </li>
+            </ul>
+            {% endif %}
+
+            <!-- User Info & Logout -->
+            <div class="acas-user-info">
+                <span class="welcome-text">Welcome,</span>
+                <span class="username">{{ user.username }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="acas-btn-logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Mobile Menu Toggle
+    (function() {
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        const navRight = document.getElementById('navRight');
+        const navAdmin = document.getElementById('navAdmin');
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+                navRight.classList.toggle('active');
+                if (navAdmin) {
+                    navAdmin.classList.toggle('active');
+                }
+            });
+        }
+
+        // Close menu when clicking a link
+        const links = document.querySelectorAll('.acas-nav-links a');
+        links.forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 992) {
+                    navLinks.classList.remove('active');
+                    navRight.classList.remove('active');
+                    if (navAdmin) {
+                        navAdmin.classList.remove('active');
+                    }
+                }
+            });
+        });
+    })();
+</script>

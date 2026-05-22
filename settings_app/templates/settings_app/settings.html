@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}Site Settings - {{ site_settings.company_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .settings-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .settings-form {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-group input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    .form-group input[type="text"]:focus {
+        outline: none;
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+    }
+
+    .help-text {
+        font-size: 14px;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .btn-save {
+        background: #1976d2;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-save:hover {
+        background: #1565c0;
+    }
+
+    .btn-cancel {
+        background: #666;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin-left: 10px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-cancel:hover {
+        background: #555;
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+
+    .page-header {
+        margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+        margin: 0 0 10px 0;
+    }
+
+    .page-header p {
+        color: #666;
+        margin: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="page-header">
+        <h1>Site Settings</h1>
+        <p>Configure company information and branding</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" class="settings-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="company_name">Company Name</label>
+            <input
+                type="text"
+                id="company_name"
+                name="company_name"
+                value="{{ settings.company_name }}"
+                required
+            >
+            <p class="help-text">This appears in the site header and page titles</p>
+        </div>
+
+        <div class="form-group">
+            <label for="copyright_text">Copyright Text</label>
+            <input
+                type="text"
+                id="copyright_text"
+                name="copyright_text"
+                value="{{ settings.copyright_text }}"
+                required
+            >
+            <p class="help-text">Footer copyright notice (year is added automatically)</p>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn-save">Save Settings</button>
+            <a href="/" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
+
+    <div style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-radius: 4px;">
+        <h3 style="margin-top: 0;">Preview:</h3>
+        <p><strong>Header:</strong> {{ settings.company_name }}</p>
+        <p><strong>Footer:</strong> &copy; {% now "Y" %} {{ settings.copyright_text }}</p>
+        <p><strong>Last Updated:</strong> {{ settings.updated_at|date:"F d, Y g:i A" }}</p>
+    </div>
+</div>
+{% endblock %}

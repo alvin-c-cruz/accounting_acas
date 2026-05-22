@@ -1,0 +1,430 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Chart of Accounts - {{ site_settings.company_name }}{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .accounts-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .accounts-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #2c3e50;
+        }
+
+        .accounts-header h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .accounts-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2980b9;
+        }
+
+        .balance-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .balance-table thead {
+            background: #34495e;
+            color: white;
+        }
+
+        .balance-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .balance-table th.amount-col {
+            text-align: right;
+            width: 150px;
+        }
+
+        .balance-table th.code-col {
+            width: 120px;
+        }
+
+        .type-header {
+            background: #ecf0f1;
+            padding: 12px 15px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #2c3e50;
+            border-top: 2px solid #bdc3c7;
+        }
+
+        .type-header.asset { background: #e3f2fd; color: #1976d2; }
+        .type-header.liability { background: #ffebee; color: #d32f2f; }
+        .type-header.equity { background: #e8f5e9; color: #388e3c; }
+        .type-header.revenue { background: #f3e5f5; color: #7b1fa2; }
+        .type-header.expense { background: #fff3e0; color: #f57c00; }
+
+        .class-header {
+            background: #fafafa;
+            padding: 10px 15px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #555;
+            border-left: 4px solid #f57c00;
+        }
+
+        .class-header-row td {
+            padding: 10px 15px !important;
+        }
+
+        .balance-table tbody tr {
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .balance-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .balance-table td {
+            padding: 12px 15px;
+            font-size: 14px;
+        }
+
+        .account-code {
+            font-family: 'Courier New', monospace;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+
+        .account-name {
+            color: #2c3e50;
+        }
+
+        .main-account-label {
+            background: #95a5a6;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-left: 8px;
+            text-transform: uppercase;
+        }
+
+        .amount {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        .amount.debit {
+            color: #2980b9;
+        }
+
+        .amount.credit {
+            color: #27ae60;
+        }
+
+        .totals-row {
+            background: #2c3e50 !important;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .totals-row td {
+            padding: 15px;
+            border-top: 3px double #2c3e50;
+        }
+
+        .balance-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        .balance-indicator.balanced {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .balance-indicator.unbalanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .view-link {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .view-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .accounts-container {
+                padding: 15px;
+            }
+
+            .accounts-header h1 {
+                font-size: 24px;
+            }
+
+            .balance-table {
+                font-size: 13px;
+            }
+
+            .balance-table th,
+            .balance-table td {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .accounts-container {
+                padding: 10px;
+            }
+
+            .accounts-header h1 {
+                font-size: 20px;
+            }
+
+            .accounts-stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .stat-item {
+                width: 100%;
+            }
+
+            .balance-table {
+                font-size: 12px;
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .balance-table th,
+            .balance-table td {
+                padding: 8px;
+                white-space: nowrap;
+            }
+
+            /* Hide Main Account column on tablet */
+            .balance-table th:nth-child(3),
+            .balance-table td:nth-child(3) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .accounts-header h1 {
+                font-size: 18px;
+            }
+
+            .accounts-header p {
+                font-size: 12px;
+            }
+
+            .stat-label {
+                font-size: 10px;
+            }
+
+            .stat-value {
+                font-size: 18px;
+            }
+
+            .balance-table {
+                font-size: 11px;
+            }
+
+            .balance-table th,
+            .balance-table td {
+                padding: 6px;
+            }
+
+            .account-code {
+                font-size: 11px;
+            }
+
+            .account-name {
+                font-size: 12px;
+            }
+
+            .amount {
+                font-size: 11px;
+            }
+
+            /* Hide View link on mobile */
+            .balance-table th:last-child,
+            .balance-table td:last-child {
+                display: none;
+            }
+
+            .class-header {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+
+            .type-header {
+                font-size: 14px;
+                padding: 10px 12px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="accounts-container">
+        <div class="accounts-header">
+            <h1>Chart of Accounts</h1>
+            <p style="color: #7f8c8d; font-size: 14px;">Trial Balance Format - All Active Accounts</p>
+            <div class="accounts-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Main Accounts</div>
+                    <div class="stat-value">{{ total_main_accounts }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Sub Accounts</div>
+                    <div class="stat-value">{{ total_sub_accounts }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Status</div>
+                    <div class="stat-value">
+                        <span class="balance-indicator {% if is_balanced %}balanced{% else %}unbalanced{% endif %}">
+                            {% if is_balanced %}✓ Balanced{% else %}⚠ Unbalanced{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="balance-table">
+            <thead>
+                <tr>
+                    <th class="code-col">Code</th>
+                    <th>Account Name</th>
+                    <th>Main Account</th>
+                    <th class="amount-col">Debit</th>
+                    <th class="amount-col">Credit</th>
+                    <th style="width: 80px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for account_type, accounts in accounts_by_type.items %}
+                    <tr>
+                        <td colspan="6" class="type-header {{ account_type.value|lower }}">
+                            {{ account_type.label }} Accounts
+                        </td>
+                    </tr>
+                    {% for account_data in accounts %}
+                        {% if account_data.type == 'class_header' %}
+                            {# Account Class Header Row (for expense accounts) #}
+                            <tr class="class-header-row">
+                                <td colspan="6" class="class-header">
+                                    {% if account_data.account_class %}
+                                        <span style="font-family: 'Courier New', monospace; margin-right: 10px;">{{ account_data.account_class.code }}</span>
+                                        {{ account_data.account_class.name }}
+                                    {% else %}
+                                        {{ account_data.class_name }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            {# Sub-Account Row #}
+                            <tr>
+                                <td class="account-code" style="padding-left: 30px;">{{ account_data.sub_account.code }}</td>
+                                <td class="account-name">{{ account_data.sub_account.name }}</td>
+                                <td>
+                                    <span style="color: #7f8c8d; font-size: 13px;">{{ account_data.main_account.name }}</span>
+                                </td>
+                                <td class="amount debit">
+                                    {% if account_data.debit > 0 %}
+                                        ${{ account_data.debit|floatformat:2 }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td class="amount credit">
+                                    {% if account_data.credit > 0 %}
+                                        ${{ account_data.credit|floatformat:2 }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="{% url 'accounts:account_detail' account_data.sub_account.id %}" class="view-link">
+                                        View →
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: #95a5a6;">
+                            No accounts found
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                <tr class="totals-row">
+                    <td colspan="3" style="text-align: right; padding-right: 20px;">
+                        TOTAL
+                    </td>
+                    <td class="amount">
+                        ${{ total_debits|floatformat:2 }}
+                    </td>
+                    <td class="amount">
+                        ${{ total_credits|floatformat:2 }}
+                    </td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        {% if not is_balanced %}
+        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 4px; margin-top: 20px;">
+            <strong>⚠ Warning:</strong> The accounts are not balanced.
+            Debits: ${{ total_debits|floatformat:2 }},
+            Credits: ${{ total_credits|floatformat:2 }},
+            Difference: ${{ total_debits|add:"-"|add:total_credits|floatformat:2 }}
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

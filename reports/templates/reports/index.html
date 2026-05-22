@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Financial Reports - Accounting System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        margin-bottom: 40px;
+    }
+
+    .page-header h1 {
+        margin: 0 0 10px 0;
+    }
+
+    .reports-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .report-card {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .report-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .report-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+
+    .report-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .report-description {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .report-card.balance-sheet {
+        border-top: 4px solid #1976d2;
+    }
+
+    .report-card.income-statement {
+        border-top: 4px solid #388e3c;
+    }
+
+    .report-card.trial-balance {
+        border-top: 4px solid #f57c00;
+    }
+
+    .report-card.cash-flow {
+        border-top: 4px solid #7b1fa2;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Financial Reports</h1>
+    <p style="color: #666; margin-top: 5px;">View comprehensive financial reports based on {{ total_posted_entries }} posted journal entries</p>
+</div>
+
+<div class="reports-grid">
+    <a href="{% url 'reports:balance_sheet' %}" class="report-card balance-sheet">
+        <div class="report-icon">📊</div>
+        <div class="report-title">Balance Sheet</div>
+        <div class="report-description">
+            Statement of financial position showing assets, liabilities, and equity at a specific point in time.
+        </div>
+    </a>
+
+    <a href="{% url 'reports:income_statement' %}" class="report-card income-statement">
+        <div class="report-icon">💰</div>
+        <div class="report-title">Income Statement</div>
+        <div class="report-description">
+            Profit & Loss statement showing revenue, expenses, and net income over a period of time.
+        </div>
+    </a>
+
+    <a href="{% url 'reports:trial_balance' %}" class="report-card trial-balance">
+        <div class="report-icon">⚖️</div>
+        <div class="report-title">Trial Balance</div>
+        <div class="report-description">
+            List of all accounts with their debit and credit balances to verify double-entry bookkeeping.
+        </div>
+    </a>
+
+    <a href="{% url 'reports:cash_flow' %}" class="report-card cash-flow">
+        <div class="report-icon">💵</div>
+        <div class="report-title">Cash Flow</div>
+        <div class="report-description">
+            Statement showing cash inflows and outflows from operating, investing, and financing activities.
+        </div>
+    </a>
+</div>
+{% endblock %}

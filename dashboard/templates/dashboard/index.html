@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Accounting System{% endblock %}
+
+{% block content %}
+<!-- Main Dashboard -->
+<main class="dashboard">
+    <!-- Summary Cards -->
+    <section class="summary-cards">
+        <div class="card">
+            <div class="card-header">
+                <h3>Total Assets</h3>
+                <span class="icon">💰</span>
+            </div>
+            <div class="card-body">
+                <p class="amount">${{ total_assets|floatformat:2 }}</p>
+                <p class="subtitle">Current balance</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Total Liabilities</h3>
+                <span class="icon">📊</span>
+            </div>
+            <div class="card-body">
+                <p class="amount">${{ total_liabilities|floatformat:2 }}</p>
+                <p class="subtitle">Current obligations</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Equity</h3>
+                <span class="icon">📈</span>
+            </div>
+            <div class="card-body">
+                <p class="amount">${{ equity|floatformat:2 }}</p>
+                <p class="subtitle">Net worth</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Monthly Revenue</h3>
+                <span class="icon">💵</span>
+            </div>
+            <div class="card-body">
+                <p class="amount">${{ monthly_revenue|floatformat:2 }}</p>
+                <p class="subtitle">This month</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="actions-grid">
+            <a href="/transactions/new" class="action-btn">
+                <span class="action-icon">➕</span>
+                <span>New Transaction</span>
+            </a>
+            <a href="/accounts" class="action-btn">
+                <span class="action-icon">📁</span>
+                <span>Manage Accounts</span>
+            </a>
+            <a href="/reports" class="action-btn">
+                <span class="action-icon">📄</span>
+                <span>View Reports</span>
+            </a>
+            <a href="/journal" class="action-btn">
+                <span class="action-icon">📖</span>
+                <span>Journal Entries</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Recent Transactions -->
+    <section class="recent-transactions">
+        <div class="section-header">
+            <h2>Recent Transactions</h2>
+            <a href="/transactions" class="btn-link">View All</a>
+        </div>
+        <div class="table-container">
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Account</th>
+                        <th>Debit</th>
+                        <th>Credit</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="6" class="empty-state">No transactions yet. Create your first transaction to get started.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Reports & Analytics -->
+    <section class="reports-section">
+        <h2>Reports & Analytics</h2>
+        <div class="reports-grid">
+            <a href="/reports/balance-sheet" class="report-card">
+                <h3>Balance Sheet</h3>
+                <p>Assets, Liabilities & Equity</p>
+            </a>
+            <a href="/reports/income-statement" class="report-card">
+                <h3>Income Statement</h3>
+                <p>Revenue & Expenses</p>
+            </a>
+            <a href="/reports/cash-flow" class="report-card">
+                <h3>Cash Flow</h3>
+                <p>Cash In & Out</p>
+            </a>
+            <a href="/reports/trial-balance" class="report-card">
+                <h3>Trial Balance</h3>
+                <p>Account Balances</p>
+            </a>
+        </div>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,362 @@
+{% extends 'base_report.html' %}
+
+{% block title %}Balance Sheet - Accounting System{% endblock %}
+
+{% block extra_css %}
+<style>
+.report-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav-links {
+            margin-bottom: 20px;
+        }
+
+        .nav-links a {
+            color: #1976d2;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #333;
+        }
+
+        .report-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 32px;
+            color: #333;
+        }
+
+        .report-date {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .balance-sheet-grid {
+            display: block;
+            margin-bottom: 30px;
+        }
+
+        .balance-sheet-grid > * {
+            margin-bottom: 30px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+        }
+
+        .section-header.assets {
+            background: #1976d2;
+        }
+
+        .section-header.liabilities {
+            background: #d32f2f;
+        }
+
+        .section-header.equity {
+            background: #388e3c;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .account-group {
+            margin-bottom: 25px;
+        }
+
+        .account-group-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .sub-account-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .sub-account-row:hover {
+            background: #f9f9f9;
+        }
+
+        .account-name {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .account-code {
+            color: #999;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .account-balance {
+            font-weight: 600;
+            font-family: monospace;
+            color: #333;
+        }
+
+        .section-total {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 3px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .total-amount {
+            font-family: monospace;
+            font-size: 24px;
+        }
+
+        .grand-total-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .equation {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .totals-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .total-box {
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .total-box.assets {
+            background: #e3f2fd;
+            border: 2px solid #1976d2;
+        }
+
+        .total-box.liabilities {
+            background: #ffebee;
+            border: 2px solid #d32f2f;
+        }
+
+        .total-box.equity {
+            background: #e8f5e9;
+            border: 2px solid #388e3c;
+        }
+
+        .total-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .total-value {
+            font-size: 28px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .total-value.assets { color: #1976d2; }
+        .total-value.liabilities { color: #d32f2f; }
+        .total-value.equity { color: #388e3c; }
+
+        .balance-check {
+            padding: 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .balance-check.balanced {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .balance-check.unbalanced {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+        }
+
+        @media print {
+            .nav-links {
+                display: none;
+            }
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="report-header">
+            <h1>Balance Sheet</h1>
+            <p class="report-date">As of {{ "now"|date:"F d, Y" }}</p>
+        </div>
+
+        <div class="balance-sheet-grid">
+            <!-- Assets Section -->
+            <div class="section-card">
+                <div class="section-header assets">
+                    ASSETS
+                </div>
+                <div class="section-content">
+                    {% if assets %}
+                        {% for main_account in assets %}
+                        <div class="account-group">
+                            <div class="account-group-title">
+                                {{ main_account.code }} - {{ main_account.name }}
+                            </div>
+                            {% for sub_account in main_account.sub_accounts.all %}
+                                {% if sub_account.is_active %}
+                                <div class="sub-account-row">
+                                    <div>
+                                        <span class="account-name">{{ sub_account.name }}</span>
+                                        <span class="account-code">({{ sub_account.code }})</span>
+                                    </div>
+                                    <div class="account-balance">
+                                        ${{ sub_account.get_balance|floatformat:2 }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">No asset accounts found</div>
+                    {% endif %}
+
+                    <div class="section-total" style="border-top: 3px solid #333; margin-top: 20px; padding-top: 20px; font-size: 22px;">
+                        <span>TOTAL ASSETS</span>
+                        <span class="total-amount">${{ total_assets|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liabilities Section -->
+            <div class="section-card">
+                    <div class="section-header liabilities">
+                        LIABILITIES
+                    </div>
+                    <div class="section-content">
+                        {% if liabilities %}
+                            {% for main_account in liabilities %}
+                            <div class="account-group">
+                                <div class="account-group-title">
+                                    {{ main_account.code }} - {{ main_account.name }}
+                                </div>
+                                {% for sub_account in main_account.sub_accounts.all %}
+                                    {% if sub_account.is_active %}
+                                    <div class="sub-account-row">
+                                        <div>
+                                            <span class="account-name">{{ sub_account.name }}</span>
+                                            <span class="account-code">({{ sub_account.code }})</span>
+                                        </div>
+                                        <div class="account-balance">
+                                            ${{ sub_account.get_balance|floatformat:2 }}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">No liability accounts found</div>
+                        {% endif %}
+
+                        <div class="section-total">
+                            <span>TOTAL LIABILITIES</span>
+                            <span class="total-amount">${{ total_liabilities|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                </div>
+
+            <!-- Equity Section -->
+            <div class="section-card">
+                <div class="section-header equity">
+                    EQUITY
+                </div>
+                <div class="section-content">
+                    {% if equity_accounts %}
+                        {% for main_account in equity_accounts %}
+                        <div class="account-group">
+                            <div class="account-group-title">
+                                {{ main_account.code }} - {{ main_account.name }}
+                            </div>
+                            {% for sub_account in main_account.sub_accounts.all %}
+                                {% if sub_account.is_active %}
+                                <div class="sub-account-row">
+                                    <div>
+                                        <span class="account-name">{{ sub_account.name }}</span>
+                                        <span class="account-code">({{ sub_account.code }})</span>
+                                    </div>
+                                    <div class="account-balance">
+                                        ${{ sub_account.get_balance|floatformat:2 }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">No equity accounts found</div>
+                    {% endif %}
+
+                    <div class="section-total" style="border-top: 2px solid #e0e0e0; margin-top: 15px; padding-top: 15px;">
+                        <span>TOTAL EQUITY</span>
+                        <span class="total-amount">${{ total_equity|floatformat:2 }}</span>
+                    </div>
+
+                    <div class="section-total" style="border-top: 3px solid #333; margin-top: 20px; padding-top: 20px; font-size: 22px;">
+                        <span>TOTAL LIABILITIES AND EQUITY</span>
+                        <span class="total-amount">${{ total_liabilities_equity|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

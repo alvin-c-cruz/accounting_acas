@@ -1,0 +1,451 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Journal Entry {{ entry.entry_number }} - {{ site_settings.company_name }}{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav-links {
+            margin-bottom: 20px;
+        }
+
+        .nav-links a {
+            color: #1976d2;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .entry-header {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .entry-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .entry-title h1 {
+            margin: 0;
+            color: #333;
+        }
+
+        .status-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-posted {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .balance-yes {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .balance-no {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .entry-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .info-item {
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .lines-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .section-header h2 {
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f9f9f9;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .account-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .account-code {
+            font-weight: 600;
+            color: #1976d2;
+        }
+
+        .account-name {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .amount {
+            font-weight: 600;
+            font-family: monospace;
+            text-align: right;
+        }
+
+        .amount.debit {
+            color: #1976d2;
+        }
+
+        .amount.credit {
+            color: #d32f2f;
+        }
+
+        .totals-row {
+            background: #f9f9f9;
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #1976d2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1565c0;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+
+        .btn-warning {
+            background: #f57c00;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e65100;
+        }
+
+        .btn-secondary {
+            background: #666;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #555;
+        }
+
+        .actions-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .actions-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .balance-summary {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .balance-item {
+            text-align: center;
+        }
+
+        .balance-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .balance-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .balance-value.debit {
+            color: #1976d2;
+        }
+
+        .balance-value.credit {
+            color: #d32f2f;
+        }
+
+        .balance-value.balanced {
+            color: #2e7d32;
+        }
+
+        .balance-value.unbalanced {
+            color: #c62828;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="detail-container">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="entry-header">
+            <div class="entry-title">
+                <h1>Journal Entry {{ entry.entry_number }}</h1>
+                <div class="status-group">
+                    {% if entry.is_posted %}
+                    <span class="status-badge status-posted">Posted</span>
+                    {% else %}
+                    <span class="status-badge status-draft">Draft</span>
+                    {% endif %}
+
+                    {% if entry.is_balanced %}
+                    <span class="status-badge balance-yes">Balanced</span>
+                    {% else %}
+                    <span class="status-badge balance-no">Unbalanced</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="entry-info">
+                <div class="info-item">
+                    <div class="info-label">Date</div>
+                    <div class="info-value">{{ entry.date|date:"F d, Y" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Reference</div>
+                    <div class="info-value">{{ entry.reference|default:"—" }}</div>
+                </div>
+                <div class="info-item" style="grid-column: 1 / -1;">
+                    <div class="info-label">Description</div>
+                    <div class="info-value" style="font-size: 16px; font-weight: normal;">{{ entry.description }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Created By</div>
+                    <div class="info-value" style="font-size: 14px;">{{ entry.created_by.username }} on {{ entry.created_at|date:"Y-m-d H:i" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Last Updated</div>
+                    <div class="info-value" style="font-size: 14px;">{{ entry.updated_by.username }} on {{ entry.updated_at|date:"Y-m-d H:i" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lines-section">
+            <div class="section-header">
+                <h2>Transaction Lines</h2>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Account</th>
+                        <th style="width: 40%;">Description</th>
+                        <th style="width: 17.5%; text-align: right;">Debit</th>
+                        <th style="width: 17.5%; text-align: right;">Credit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for line in lines %}
+                    <tr>
+                        <td>
+                            <div class="account-info">
+                                <span class="account-code">{{ line.sub_account.code }}</span>
+                                <span class="account-name">{{ line.sub_account.name }}</span>
+                            </div>
+                        </td>
+                        <td>{{ line.description|default:"—" }}</td>
+                        <td class="amount debit">
+                            {% if line.debit > 0 %}
+                                ${{ line.debit|floatformat:2 }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td class="amount credit">
+                            {% if line.credit > 0 %}
+                                ${{ line.credit|floatformat:2 }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="totals-row">
+                        <td colspan="2" style="text-align: right;">TOTALS:</td>
+                        <td class="amount debit">${{ entry.get_total_debits|floatformat:2 }}</td>
+                        <td class="amount credit">${{ entry.get_total_credits|floatformat:2 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="balance-summary">
+                <div class="balance-item">
+                    <div class="balance-label">Total Debits</div>
+                    <div class="balance-value debit">${{ entry.get_total_debits|floatformat:2 }}</div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-label">Total Credits</div>
+                    <div class="balance-value credit">${{ entry.get_total_credits|floatformat:2 }}</div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-label">Difference</div>
+                    {% if entry.is_balanced %}
+                    <div class="balance-value balanced">$0.00</div>
+                    {% else %}
+                    <div class="balance-value unbalanced">${{ entry.get_difference|floatformat:2 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="actions-section">
+            <div class="actions-group">
+                {% if not entry.is_posted %}
+                    <a href="{% url 'transactions:transaction_edit' entry.id %}" class="btn btn-primary">Edit Entry</a>
+                    {% if entry.is_balanced %}
+                        <form method="post" action="{% url 'transactions:transaction_post' entry.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Post Entry</button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <form method="post" action="{% url 'transactions:transaction_unpost' entry.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning">Unpost Entry</button>
+                    </form>
+                {% endif %}
+                <a href="{% url 'transactions:transaction_list' %}" class="btn btn-secondary">Back to List</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
