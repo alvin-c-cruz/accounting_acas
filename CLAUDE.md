@@ -687,6 +687,65 @@ def settings_view(request):
 - Inline formsets for transaction lines
 - Balance validation indicators
 
+## Deployment to PythonAnywhere
+
+This application is configured for deployment to **PythonAnywhere**. For complete step-by-step instructions, see [DEPLOYMENT_PYTHONANYWHERE.md](DEPLOYMENT_PYTHONANYWHERE.md).
+
+### Quick Deployment Summary
+
+1. **Clone repository** on PythonAnywhere:
+   ```bash
+   git clone https://github.com/alvin-c-cruz/accounting_acas.git
+   ```
+
+2. **Create virtual environment**:
+   ```bash
+   mkvirtualenv --python=/usr/bin/python3.10 accounting_env
+   pip install -r requirements.txt
+   ```
+
+3. **Configure .env file**:
+   - Copy `.env.example` to `.env`
+   - Generate new `SECRET_KEY`
+   - Set `DEBUG=False`
+   - Update `ALLOWED_HOSTS`
+
+4. **Run migrations**:
+   ```bash
+   python manage.py migrate
+   python manage.py createsuperuser
+   python manage.py collectstatic --noinput
+   ```
+
+5. **Configure Web App** in PythonAnywhere dashboard:
+   - Manual configuration (Python 3.10)
+   - Set WSGI file
+   - Configure static files mapping
+   - Set virtual environment path
+
+6. **Reload** and visit `https://yourusername.pythonanywhere.com`
+
+### Production Dependencies
+
+The `requirements.txt` includes production-ready dependencies:
+- **gunicorn** - WSGI HTTP Server
+- **whitenoise** - Static file serving with compression
+- **psycopg2-binary** - PostgreSQL support (optional)
+- **python-decouple** - Environment variable management
+
+### PythonAnywhere-Specific Settings
+
+Located in `.env.example`:
+```env
+DEBUG=False
+ALLOWED_HOSTS=yourusername.pythonanywhere.com
+STATIC_ROOT=/home/yourusername/accounting_acas/staticfiles
+MEDIA_ROOT=/home/yourusername/accounting_acas/media
+CSRF_TRUSTED_ORIGINS=https://yourusername.pythonanywhere.com
+```
+
+For detailed deployment instructions, troubleshooting, and PythonAnywhere configuration, see [DEPLOYMENT_PYTHONANYWHERE.md](DEPLOYMENT_PYTHONANYWHERE.md).
+
 ## Production Deployment Checklist
 
 Before deploying to production:
