@@ -40,11 +40,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Admin**: Django Admin (enhanced with custom forms and validation)
 - **Forms**: Django Forms with formsets for transaction lines
 - **Decimal Handling**: Django's `DecimalField(max_digits=19, decimal_places=2)` for all currency values
-- **Version Control**: Git (assumed)
+- **Version Control**: Git
 
 ## Development Setup
 
+### Initial Setup
+
 ```bash
+# Clone repository (if using remote)
+git clone <repository-url>
+cd accounting_acas
+
 # Create virtual environment
 python -m venv venv
 
@@ -57,7 +63,7 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Install dev dependencies
+# Install dev dependencies (optional)
 pip install -r requirements-dev.txt
 
 # Run migrations
@@ -67,7 +73,38 @@ python manage.py migrate
 python manage.py createsuperuser
 
 # Load initial data (chart of accounts, etc.)
-python manage.py loaddata initial_data.json
+python manage.py loaddata initial_data.json  # If available
+
+# Run development server
+python manage.py runserver
+```
+
+### Git Workflow
+
+```bash
+# Check status
+git status
+
+# Stage files
+git add .
+
+# Commit changes
+git commit -m "Your commit message"
+
+# View commit history
+git log --oneline
+
+# Create a new branch for features
+git checkout -b feature/your-feature-name
+
+# Switch branches
+git checkout master
+
+# Merge branch
+git merge feature/your-feature-name
+
+# Push to remote (if configured)
+git push origin master
 ```
 
 ## Common Commands
@@ -774,3 +811,213 @@ with transaction.atomic():
 
 **Issue**: Responsive menu not working on mobile
 - **Solution**: Check browser console for JavaScript errors. Verify navbar.html script is included.
+
+## Version Control with Git
+
+### Repository Structure
+
+The project uses Git for version control with the following structure:
+
+```
+.git/                  # Git repository data
+.gitignore             # Excludes venv, db.sqlite3, __pycache__, etc.
+.env.example           # Example environment variables (tracked)
+.env                   # Actual environment variables (NOT tracked)
+```
+
+### What's Tracked
+
+**Tracked files** (committed to Git):
+- All source code (*.py files)
+- Templates (*.html)
+- Static files (CSS, JS)
+- Configuration files (settings.py, urls.py)
+- Requirements files (requirements.txt, requirements-dev.txt)
+- Migrations (accounts/migrations/*.py)
+- Documentation (CLAUDE.md, README.md)
+- Utility scripts (check_balance.py, close_period.py, etc.)
+
+**NOT tracked** (.gitignore):
+- Virtual environment (venv/)
+- Database (db.sqlite3)
+- Environment variables (.env)
+- Python cache (__pycache__/, *.pyc)
+- IDE files (.vscode/, .idea/)
+- Media files (uploaded by users)
+- Static files (collected for production)
+- Log files (*.log)
+
+### Initial Commit
+
+The initial commit includes:
+- **83 files**
+- **9,486 lines of code**
+- Complete Django accounting system with all features
+- Commit message documents all major features and technology stack
+
+### Best Practices
+
+**Commit Messages**:
+```bash
+# Good commit message format
+git commit -m "Add 3-level account hierarchy for expense categorization
+
+- Created AccountClass model
+- Updated SubAccount with account_class FK
+- Modified chart_of_accounts view to display hierarchy
+- Added responsive design to accounts table"
+```
+
+**Branching Strategy**:
+```bash
+# Main branch
+master (or main)
+
+# Feature branches
+feature/expense-categories
+feature/cash-flow-report
+feature/multi-currency
+
+# Bugfix branches
+bugfix/balance-calculation
+bugfix/posting-validation
+
+# Example workflow
+git checkout -b feature/expense-categories
+# ... make changes ...
+git add .
+git commit -m "Implement expense categorization"
+git checkout master
+git merge feature/expense-categories
+```
+
+**Before Committing**:
+1. Test the application: `python manage.py test`
+2. Check for migrations: `python manage.py makemigrations --dry-run`
+3. Run the development server: `python manage.py runserver`
+4. Review changes: `git diff`
+5. Stage only relevant files: `git add <specific-files>` or `git add .`
+6. Write descriptive commit message
+7. Commit: `git commit -m "Your message"`
+
+### Common Git Commands
+
+```bash
+# View current status
+git status
+
+# View changes
+git diff
+git diff --staged  # View staged changes
+
+# View commit history
+git log
+git log --oneline --graph --all
+
+# Undo changes
+git checkout -- <file>          # Discard working directory changes
+git reset HEAD <file>            # Unstage file
+git revert <commit-hash>         # Revert a commit
+git reset --soft HEAD~1          # Undo last commit (keep changes)
+
+# View file history
+git log --follow <file>
+
+# Search commits
+git log --grep="keyword"
+git log --author="Author Name"
+
+# Stash changes
+git stash                        # Save work in progress
+git stash list                   # View stashes
+git stash pop                    # Apply and remove stash
+git stash apply                  # Apply stash (keep it)
+
+# Branches
+git branch                       # List branches
+git branch <name>                # Create branch
+git branch -d <name>             # Delete branch
+git checkout <name>              # Switch branch
+git checkout -b <name>           # Create and switch
+
+# Remote operations (if configured)
+git remote add origin <url>      # Add remote
+git push -u origin master        # Push and set upstream
+git pull origin master           # Pull changes
+git fetch origin                 # Fetch without merging
+```
+
+### Setting Up Remote Repository
+
+If you want to push to GitHub, GitLab, or Bitbucket:
+
+```bash
+# Configure Git user (first time)
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+
+# Add remote repository
+git remote add origin https://github.com/username/accounting_acas.git
+
+# Push initial commit
+git push -u origin master
+
+# Subsequent pushes
+git push
+```
+
+### .gitignore Configuration
+
+The `.gitignore` file is configured to exclude:
+- Python bytecode and cache files
+- Virtual environments (venv/)
+- SQLite database (db.sqlite3)
+- Environment variables (.env)
+- IDE configuration (.vscode/, .idea/)
+- OS-specific files (.DS_Store, Thumbs.db)
+- Build artifacts (dist/, build/, *.egg-info/)
+- Static/media files (/staticfiles/, /media/)
+- Coverage reports (htmlcov/, .coverage)
+- Log files (*.log)
+
+### Migration Tracking
+
+**Migrations ARE tracked** in Git by default. This ensures:
+- Team members have consistent database schema
+- Deployment to production applies correct migrations
+- Migration history is preserved
+
+If you want to **exclude migrations**, uncomment these lines in `.gitignore`:
+```bash
+# */migrations/*.py
+# !*/migrations/__init__.py
+```
+
+### Collaboration Workflow
+
+For team development:
+
+```bash
+# 1. Always pull before starting work
+git pull origin master
+
+# 2. Create feature branch
+git checkout -b feature/new-report
+
+# 3. Make changes and commit
+git add .
+git commit -m "Add new financial report"
+
+# 4. Push feature branch
+git push origin feature/new-report
+
+# 5. Create Pull Request on GitHub/GitLab
+# (via web interface)
+
+# 6. After PR is merged, update local master
+git checkout master
+git pull origin master
+
+# 7. Delete local feature branch
+git branch -d feature/new-report
+```
