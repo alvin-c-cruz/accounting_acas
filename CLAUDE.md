@@ -229,14 +229,18 @@ accounting_acas/
 │       └── dashboard.js
 ├── staticfiles/             # Collected static files (production)
 ├── media/                   # User uploaded files
+├── scripts/                 # Utility scripts
+│   ├── README.md           # Script documentation
+│   ├── check_balance.py    # Diagnostic: verify ledger balance
+│   ├── close_period.py     # Utility: create closing entries
+│   ├── reverse_closing.py  # Utility: reverse closing entries
+│   ├── create_sample_data.py        # Utility: generate demo data
+│   └── create_sample_transactions.py # Utility: create test transactions
 ├── manage.py                # Django management script
 ├── requirements.txt         # Production dependencies
 ├── requirements-dev.txt     # Development dependencies
-├── check_balance.py         # Diagnostic: verify ledger balance
-├── close_period.py          # Utility: create closing entries
-├── create_sample_data.py    # Utility: generate demo data
-├── reverse_closing.py       # Utility: reverse closing entries
 ├── .env.example
+├── .gitignore              # Git exclusions
 ├── CLAUDE.md               # This file
 └── db.sqlite3              # SQLite database (development)
 ```
@@ -532,12 +536,14 @@ The application is fully responsive across all device sizes:
 
 ## Utility Scripts
 
-Located in project root for operational tasks:
+Located in `scripts/` directory for operational tasks. See [scripts/README.md](scripts/README.md) for detailed documentation.
 
-### check_balance.py
+### Production Utilities
+
+#### check_balance.py
 Diagnostic script to verify ledger integrity:
 ```bash
-python check_balance.py
+python scripts/check_balance.py
 ```
 **Checks**:
 - Posted vs draft transaction counts
@@ -547,10 +553,10 @@ python check_balance.py
 - Net income calculation
 - Color-coded terminal output
 
-### close_period.py
+#### close_period.py
 Create closing entries to zero revenue/expense accounts:
 ```bash
-python close_period.py
+python scripts/close_period.py
 ```
 **Process**:
 1. Debit all revenue accounts (zero balances)
@@ -561,17 +567,28 @@ python close_period.py
 
 **Requirements**: Sub-account 3101 must exist for retained earnings
 
-### create_sample_data.py
-Generate demo data for testing:
-```bash
-python create_sample_data.py
-```
-
-### reverse_closing.py
+#### reverse_closing.py
 Reverse previously created closing entries:
 ```bash
-python reverse_closing.py
+python scripts/reverse_closing.py
 ```
+**Use when**: Closing entry was created by mistake or corrections needed
+
+### Development Utilities
+
+#### create_sample_data.py
+Generate demo chart of accounts:
+```bash
+python scripts/create_sample_data.py
+```
+**Creates**: Sample main accounts, sub-accounts, and account classes with 3-level hierarchy
+
+#### create_sample_transactions.py
+Generate demo transactions for testing:
+```bash
+python scripts/create_sample_transactions.py
+```
+**Creates**: Sample journal entries with realistic data for testing reports
 
 ## Access Control & Permissions
 
