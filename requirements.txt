@@ -5,8 +5,7 @@ Django>=5.0,<5.1
 psycopg2-binary>=2.9.9  # PostgreSQL adapter (for production if using PostgreSQL)
 
 # Environment Configuration
-python-decouple>=3.8    # Environment variable management
-django-environ>=0.11.2  # Django-specific environment config
+python-decouple>=3.8    # Environment variable management (REQUIRED for .env support)
 
 # Media Files
 pillow>=10.2.0          # Image processing
